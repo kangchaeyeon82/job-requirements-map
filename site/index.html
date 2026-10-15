@@ -1,0 +1,657 @@
+<title>직무 채용 지도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: light grey page, centered column of rounded white cards; navy summary card on top; sections stack top to bottom. Deliberately light-only. */
+:root{
+  color-scheme:light;
+  --page:#f2f4f6; --card:#ffffff; --ink:#191f28; --ink2:#333d4b; --sub:#6b7684; --faint:#b0b8c1; --line:#e5e8eb;
+  --accent:#3182f6; --accent-ink:#1b64da; --accent-soft:#e8f3ff; --accent-mid:#c9dcff;
+  --navy:#2e3a8c; --badge:#ffe066; --badge-ink:#5c4800;
+  --green:#2f8f57; --green-soft:#e5f5eb; --earth:#a8700a; --earth-soft:#fbf2dc; --red:#d63f3f; --red-soft:#fdecec; --violet:#5b4fd6; --violet-soft:#eeecfd;
+  --font:"Pretendard Variable",Pretendard,"Noto Sans KR",-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --r-lg:24px; --r-md:16px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:0 64px;display:flex;flex-direction:column;gap:40px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(242,244,246,.92);backdrop-filter:blur(8px)}
+.top-in{max-width:1080px;margin:0 auto;padding-inline:20px;padding-block:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0;white-space:nowrap}
+.logo span{color:var(--accent)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;min-width:0;max-width:100%}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;font:inherit;font-size:14px;font-weight:700;border:0;border-radius:999px;padding:8px 14px;background:var(--card);color:var(--sub);cursor:pointer;transition:background .15s,color .15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+button:focus-visible,input:focus-visible,tr:focus-visible{outline:3px solid var(--accent-mid);outline-offset:2px}
+
+.sec{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sec-h h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.sec-h p{margin:4px 0 0;font-size:14px;color:var(--sub);max-width:70ch}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}
+.card{background:var(--card);border-radius:var(--r-lg);padding:24px 22px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.card h3{margin:0;font-size:17px;font-weight:700;line-height:1.4}
+.card h3 small{font-size:13px;font-weight:500;color:var(--sub);margin-left:6px}
+.note{margin:0;font-size:13px;color:var(--sub);line-height:1.55}
+
+/* hero */
+.hero{margin-top:8px;background:var(--navy);color:#fff;border-radius:var(--r-lg);padding:30px 26px;display:flex;flex-direction:column;gap:20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none}
+.hero-label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:600;color:rgba(255,255,255,.75)}
+.badge{background:var(--badge);color:var(--badge-ink);font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px}
+.hero h1{margin:0;font-size:clamp(24px,4vw,32px);font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.hero p{margin:0;color:rgba(255,255,255,.82);font-size:16px;line-height:1.7;max-width:64ch}
+.hero p b{color:#fff;font-weight:800}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;position:relative;z-index:1}
+.stat{background:rgba(255,255,255,.1);border-radius:var(--r-md);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.stat span{font-size:13px;color:rgba(255,255,255,.72)}
+.stat b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat small{font-size:12px;color:rgba(255,255,255,.55)}
+
+/* insight cards */
+.ins{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.ins article{background:var(--card);border-radius:var(--r-lg);padding:22px 20px;display:flex;flex-direction:column;gap:10px}
+.tag{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px}
+.blue{background:var(--accent-soft);color:var(--accent-ink)} .green{background:var(--green-soft);color:var(--green)}
+.earth{background:var(--earth-soft);color:var(--earth)} .red{background:var(--red-soft);color:var(--red)} .violet{background:var(--violet-soft);color:var(--violet)}
+.ins h3{margin:0;font-size:17px;font-weight:700;line-height:1.45}
+.ins p{margin:0;font-size:14px;color:var(--sub);line-height:1.7}
+
+/* why box */
+.why{background:var(--accent-soft);border-radius:var(--r-md);padding:16px 18px;display:flex;gap:12px;align-items:flex-start}
+.why i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-style:normal;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.why b{display:block;font-size:14px;font-weight:800;color:var(--accent-ink)}
+.why span{font-size:14px;color:var(--ink2);line-height:1.7}
+
+/* bars */
+.legend{display:flex;gap:14px;font-size:13px;color:var(--sub);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(0,10rem) 1fr 4.6rem;align-items:center;gap:12px;font-size:14px}
+.bar .n{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar .v small{font-weight:500;color:var(--sub);font-size:12px;margin-left:3px}
+.track{height:12px;border-radius:999px;background:var(--page);display:flex;gap:2px;overflow:hidden}
+.track .m{background:var(--accent);border-radius:999px}
+.track .k{background:var(--accent-mid);border-radius:999px}
+.bar:hover .n{color:var(--accent-ink)}
+.bars.sm{gap:9px}
+.bars.sm .bar{grid-template-columns:minmax(0,8.5rem) 1fr 2.8rem;font-size:13px}
+.bars.sm .track{height:9px}
+
+/* tiers */
+.tier ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:t}
+.tier li{display:flex;align-items:baseline;gap:10px;font-size:15px;font-weight:600;counter-increment:t}
+.tier li::before{content:counter(t);flex:none;width:22px;height:22px;border-radius:50%;background:var(--page);color:var(--sub);font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;align-self:center}
+.tier li span{margin-left:auto;font-size:13px;font-weight:500;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tier-h{display:flex;align-items:center;gap:10px}
+.num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* years */
+.cols{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:180px;padding-top:22px}
+.col{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;min-width:0}
+.col .c{width:100%;max-width:38px;background:var(--accent-mid);border-radius:10px 10px 4px 4px;position:relative;min-height:3px}
+.col.hi .c{background:var(--accent)}
+.col .c em{position:absolute;top:-21px;left:50%;transform:translateX(-50%);font-style:normal;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.col span{font-size:12px;color:var(--sub);white-space:nowrap}
+
+/* jobs table */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.search{flex:1 1 260px;max-width:480px;min-width:0;font:inherit;font-size:15px;border:0;border-radius:var(--r-md);background:var(--page);padding:12px 16px;color:var(--ink)}
+.search::placeholder{color:var(--faint)}
+.count{font-size:13px;color:var(--sub)}
+.tbox{max-height:34rem;overflow:auto;border-radius:var(--r-md);border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{position:sticky;top:0;background:var(--page);text-align:left;padding:0;z-index:1}
+th button{font:inherit;font-size:13px;font-weight:700;color:var(--sub);background:none;border:0;padding:11px 14px;cursor:pointer;width:100%;text-align:left;white-space:nowrap}
+th[aria-sort="ascending"] button::after{content:" ↑";color:var(--accent)} th[aria-sort="descending"] button::after{content:" ↓";color:var(--accent)}
+td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#f9fafb}
+tbody tr[aria-selected="true"]{background:var(--accent-soft)}
+td.co{font-weight:700;white-space:nowrap;max-width:12rem;overflow:hidden;text-overflow:ellipsis}
+td.pos{min-width:14rem}
+td.yr{white-space:nowrap;font-variant-numeric:tabular-nums}
+td.kw{color:var(--sub);font-size:13px;min-width:14rem}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--page);color:var(--ink2);white-space:nowrap}
+.detail{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.detail .box{background:var(--page);border-radius:var(--r-md);padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.detail h4{margin:0;font-size:14px;font-weight:800}
+.detail pre{margin:0;white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.75;color:var(--ink2);max-height:22rem;overflow:auto}
+.dh{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.dh b{font-size:16px}
+.dh a{font-size:14px;font-weight:700;color:var(--accent-ink);text-decoration:none;white-space:nowrap}
+.dh a:hover{text-decoration:underline}
+.foot{font-size:13px;color:var(--sub);line-height:1.75;max-width:76ch;margin:0}
+@media (max-width:640px){
+  .card{padding:22px 18px}.hero{padding:24px 20px}
+  .bar{grid-template-columns:minmax(0,7rem) 1fr 4.2rem;gap:10px}
+  .cols{gap:4px}.col span{font-size:11px}
+  .hide-sm{display:none}
+}
+.fields{display:flex;gap:4px;background:var(--card);border-radius:999px;padding:4px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.fields::-webkit-scrollbar{display:none}
+.fld{flex:none;font:inherit;font-size:14px;font-weight:800;border:0;border-radius:999px;padding:8px 16px;background:transparent;color:var(--sub);cursor:pointer;transition:background .15s,color .15s}
+.fld:hover{color:var(--ink)}
+.fld[aria-pressed="true"]{background:var(--accent);color:#fff}
+.top-in.sub{padding-block:0 10px}
+body.loading .wrap{opacity:.45;transition:opacity .2s}
+
+.ai-btn{flex:none;font:inherit;font-size:14px;font-weight:800;border:0;border-radius:999px;padding:9px 16px;background:var(--ink);color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.ai-btn:hover{background:#333d4b}
+.ai-btn[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent-ink)}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--badge)}
+.top-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.chat{position:fixed;z-index:40;right:0;top:0;bottom:0;width:400px;max-width:100%;background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:-12px 0 32px rgba(25,31,40,.06)}
+.chat-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.chat-h b{font-size:17px;font-weight:800}
+.chat-h small{display:block;font-size:12px;color:var(--sub);font-weight:500;margin-top:2px}
+.chat-h .acts{display:flex;gap:6px}
+.icon-btn{font:inherit;font-size:13px;font-weight:700;border:0;border-radius:10px;padding:7px 10px;background:var(--page);color:var(--ink2);cursor:pointer}
+.icon-btn:hover{background:var(--line)}
+.ctx{margin:12px 18px 0;padding:10px 12px;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink);font-size:12.5px;font-weight:600;line-height:1.5}
+.msgs{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:92%;font-size:14px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
+.msg.u{align-self:flex-end;background:var(--accent);color:#fff;border-radius:16px 16px 4px 16px;padding:10px 14px;white-space:pre-wrap}
+.msg.a{align-self:flex-start;background:var(--page);color:var(--ink);border-radius:16px 16px 16px 4px;padding:12px 14px}
+.msg.a p{margin:0 0 6px}.msg.a p:last-child{margin:0}
+.msg.a ul,.msg.a ol{margin:2px 0 8px;padding-left:18px}
+.msg.a li{margin:2px 0}
+.msg.a a{color:var(--accent-ink);font-weight:700}
+.msg.a .h{font-weight:800;margin-top:6px}
+.msg.think{color:var(--sub);font-style:normal}
+.msg.err{background:var(--red-soft);color:var(--red)}
+.tool-note{font-size:12px;color:var(--sub);align-self:flex-start;padding-left:4px}
+.hello{background:var(--page);border-radius:16px;padding:16px;font-size:14px;line-height:1.7;color:var(--ink2)}
+.hello b{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}
+.sugs{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 10px}
+.sug{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:7px 12px;cursor:pointer;text-align:left}
+.sug:hover{border-color:var(--accent);color:var(--accent-ink)}
+.compose{display:flex;gap:8px;align-items:flex-end;padding:12px 18px 16px;border-top:1px solid var(--line)}
+.compose textarea{flex:1;min-width:0;resize:none;font:inherit;font-size:14px;line-height:1.5;border:0;border-radius:14px;background:var(--page);padding:11px 14px;color:var(--ink);max-height:140px}
+.compose textarea::placeholder{color:var(--faint)}
+.send{flex:none;font:inherit;font-size:14px;font-weight:800;border:0;border-radius:14px;padding:11px 16px;background:var(--accent);color:#fff;cursor:pointer}
+.send:disabled{background:var(--accent-mid);cursor:default}
+.send.stop{background:var(--ink)}
+.chat-note{font-size:11.5px;color:var(--faint);padding:0 18px 12px;margin-top:-8px}
+@media (min-width:1180px){body.chat-open{padding-right:400px}}
+@media (max-width:1179px){.chat{width:100%;max-width:440px}}
+@media (max-width:520px){.chat{max-width:100%;border-left:0}.ai-btn .lbl{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <p class="logo">직무 <span>채용 지도</span></p>
+    <div class="top-right"><nav class="fields" id="fields" aria-label="직무 분야"></nav><button class="ai-btn" id="ai-toggle" type="button" aria-expanded="false" aria-controls="chat" hidden><span class="ai-dot"></span><span class="lbl">AI에게 묻기</span><span class="sm-lbl" aria-hidden="true"></span></button></div>
+  </div>
+  <div class="top-in sub"><nav class="tabs" id="tabs" role="tablist" aria-label="세부 직군"></nav></div>
+</header>
+
+<main class="wrap">
+  <section class="hero" aria-live="polite">
+    <div class="hero-label"><span id="h-track"></span><span class="badge" id="h-stamp"></span></div>
+    <h1 id="h1"></h1>
+    <p id="takeaway"></p>
+    <div class="stats" id="kpis"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>핵심 인사이트</h2><p>통계에서 읽히는 내용을 네 가지로 정리했어요.</p></div>
+    <div class="ins" id="ins"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>가장 많이 요구하는 <span class="nn">기술</span> Top 20</h2><p>자격요건에 적혀 있으면 필수, 우대사항에만 적혀 있으면 우대로 셌어요. 오른쪽 숫자는 둘 중 한 곳이라도 언급한 공고의 비율이에요.</p></div>
+    <div class="card">
+      <div class="legend"><span><i style="background:var(--accent)"></i>자격요건(필수)</span><span><i style="background:var(--accent-mid)"></i>우대사항에만 있음</span></div>
+      <div class="bars" id="top"></div>
+      <div class="why" id="why-skills"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>경력 단계별로 요구하는 <span class="nn">기술</span></h2><p>최소 경력 구간마다 자격요건에 가장 많이 적힌 <span class="nn">기술</span> 6개예요. 비율은 그 구간 공고 수 대비예요.</p></div>
+    <div class="grid" id="career"></div>
+    <div class="why" id="why-career"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>이 직군에 필요한 것: 준비 체크리스트</h2><p>필수 비율 15% 이상은 기본기, 7–15%는 핵심 <span class="nn">기술</span>, 우대사항에 더 자주 나오는 <span class="nn">기술</span>은 가산점으로 나눴어요.</p></div>
+    <div class="grid" id="prep"></div>
+    <div class="why" id="why-prep"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>분야별 상세 요건</h2><p>분야마다 많이 언급된 <span class="nn">기술</span> 6개예요. 모든 카드가 같은 눈금을 써서 카드끼리 길이를 비교할 수 있어요.</p></div>
+    <div class="grid" id="groups"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>경력·학력·근무지</h2></div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))">
+      <div class="card"><h3>요구 최소 경력</h3><p class="note">공고가 제시한 최소 연차별 공고 수</p><div class="cols" id="years"></div></div>
+      <div class="card"><h3>학력·전공 언급</h3><p class="note">자격요건에 학위·전공이 적힌 공고 비율</p><div class="bars sm" id="edu"></div></div>
+      <div class="card"><h3>공통 역량</h3><p class="note">자격요건·우대사항에 언급된 공고 비율</p><div class="bars sm" id="soft"></div></div>
+      <div class="card"><h3>근무지</h3><p class="note">근무지 기준 공고 비율</p><div class="bars sm" id="loc"></div></div>
+    </div>
+    <div class="why" id="why-profile"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>공고별 요건</h2><p>행을 누르면 아래에 그 공고의 자격요건·우대사항 원문이 열려요.</p></div>
+    <div class="card">
+      <div class="tools">
+        <input class="search" id="q" type="search" placeholder="" aria-label="공고 검색">
+        <span class="count" id="count"></span>
+      </div>
+      <div class="tbox">
+        <table>
+          <thead><tr>
+            <th><button type="button" data-s="c">기업</button></th>
+            <th><button type="button" data-s="p">포지션</button></th>
+            <th class="hide-sm"><button type="button" data-s="t">직군</button></th>
+            <th><button type="button" data-s="y">경력</button></th>
+            <th class="hide-sm"><button type="button" data-s="l">근무지</button></th>
+            <th class="hide-sm"><button type="button" data-s="ms">필수 <span class="nn">기술</span> 키워드</button></th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="detail" id="detail" hidden>
+        <div class="box">
+          <div class="dh"><b id="d-title"></b><a id="d-link" href="#" target="_blank" rel="noopener">원티드에서 보기 ›</a></div>
+          <p class="note" id="d-co"></p>
+          <h4>자격요건</h4><pre id="d-req"></pre>
+        </div>
+        <div class="box">
+          <h4>우대사항</h4><pre id="d-pref"></pre>
+          <h4>추출된 키워드</h4><p class="note" id="d-kw"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot" id="foot"></p>
+</main>
+
+<aside class="chat" id="chat" aria-label="AI 취업 상담" hidden>
+  <div class="chat-h">
+    <div><b>AI 취업 상담</b><small>지금 보고 있는 통계를 근거로 답해요</small></div>
+    <div class="acts"><button class="icon-btn" id="chat-new" type="button">새 대화</button><button class="icon-btn" id="chat-close" type="button" aria-label="상담 닫기">닫기</button></div>
+  </div>
+  <div class="ctx" id="chat-ctx"></div>
+  <div class="msgs" id="msgs" aria-live="polite"></div>
+  <div class="sugs" id="sugs"></div>
+  <form class="compose" id="compose">
+    <textarea id="ask" rows="1" placeholder="예: 신입이면 뭐부터 공부해야 해?" aria-label="질문 입력"></textarea>
+    <button class="send" id="send" type="submit">보내기</button>
+  </form>
+  <p class="chat-note">답변은 내 Claude 사용량을 써요. 통계는 2026-10-15 원티드 공고 기준이에요.</p>
+</aside>
+
+<script>
+const FIELDS = [{key:'engineer', name:'엔지니어'}, {key:'dev', name:'개발'}, {key:'marketing', name:'마케팅'}, {key:'design', name:'디자인'}];
+const CACHE = {};
+let D = null, ORDER = [], LABEL = {}, NOUN = '기술', field = null;
+const TONE = {'채널':'blue','데이터':'blue','언어':'blue','툴':'blue','포트폴리오':'green','핵심':'violet','기본':'blue','가산점':'earth','신입':'green','트렌드':'red','참고':'earth','지역':'blue','경력':'earth'};
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const pc = (a, b) => b ? Math.round(a / b * 100) : 0;
+const pct = (a, b) => pc(a, b) + '%';
+const fmt = (n) => n.toLocaleString('ko-KR');
+const nn = (t) => NOUN === '기술' ? t : t.replace(/프로젝트로/g, '포트폴리오로').replace(/기술/g, NOUN);
+
+let cur = '전체';
+const tabs = $('tabs'), fieldsNav = $('fields');
+FIELDS.forEach(f => {
+  const b = el('button', 'fld', f.name); b.type = 'button'; b.dataset.f = f.key;
+  b.addEventListener('click', () => { if (f.key !== field) { go(f.key); window.scrollTo(0, 0); } });
+  fieldsNav.appendChild(b);
+});
+function buildTabs() {
+  tabs.replaceChildren();
+  ORDER.forEach(t => {
+    const b = el('button', 'tab', t === '전체' ? '전체' : LABEL[t]); b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.t = t;
+    b.addEventListener('click', () => { cur = t; selected = null; render(); });
+    tabs.appendChild(b);
+  });
+}
+async function go(key) {
+  field = key;
+  try { localStorage.setItem('jobmap-field', key); } catch (e) {}
+  try { if (location.hash.slice(1) !== key) history.replaceState(null, '', '#' + key); } catch (e) {}
+  fieldsNav.querySelectorAll('.fld').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === key)));
+  if (!CACHE[key]) {
+    document.body.classList.add('loading'); $('h-track').textContent = '데이터를 불러오는 중이에요';
+    try {
+      const r = await fetch(`data/${key}.json`); if (!r.ok) throw new Error(r.status);
+      const data = await r.json(); data.jobs.forEach(j => { j.ms = j.m.join(', '); }); CACHE[key] = data;
+    } catch (e) {
+      document.body.classList.remove('loading'); $('h-track').textContent = '데이터를 불러오지 못했어요. 새로고침해 보세요.'; return;
+    }
+    document.body.classList.remove('loading');
+  }
+  if (field !== key) return;
+  D = CACHE[key]; ORDER = D.meta.order; LABEL = D.meta.labels; NOUN = D.meta.noun || '기술';
+  cur = '전체'; selected = null; sortKey = null; $('q').value = '';
+  $('h1').textContent = D.meta.h1; $('q').placeholder = D.meta.ph;
+  document.querySelectorAll('.nn').forEach(x => { x.textContent = NOUN; });
+  buildTabs(); render();
+}
+
+function barRow(name, parts, max, val, sub, title) {
+  const r = el('div', 'bar'); if (title) r.title = title;
+  const tr = el('div', 'track');
+  parts.forEach(([v, c]) => { if (v > 0) { const d = el('div', c); d.style.width = (v / max * 100) + '%'; tr.appendChild(d); } });
+  const v = el('span', 'v', val); if (sub) v.appendChild(el('small', null, sub));
+  r.append(el('span', 'n', name), tr, v); return r;
+}
+function why(id, title, text) {
+  const w = $(id); w.replaceChildren();
+  const body = el('div'); body.append(el('b', null, title), el('span', null, text));
+  w.append(el('i', null, 'i'), body);
+}
+
+function render() {
+  const T = D.tracks[cur], n = T.n;
+  tabs.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.t === cur)));
+
+  // hero
+  $('h-track').textContent = `${LABEL[cur]} · 공고 ${fmt(n)}건`;
+  $('h-stamp').textContent = `원티드 ${D.collected.slice(5).replace('-', '/')} 수집`;
+  const byMust = T.skills.slice().sort((a, b) => b.must - a.must);
+  const top3 = byMust.slice(0, 3);
+  const tk = $('takeaway'); tk.replaceChildren();
+  const add = (t, bold) => tk.appendChild(bold ? el('b', null, t) : document.createTextNode(t));
+  add(`${LABEL[cur]} 공고 `); add(fmt(n) + '건', 1); add(nn('에서 가장 자주 필수로 요구하는 기술은 '));
+  top3.forEach((s, i) => { add(s.skill + `(${pct(s.must, n)})`, 1); add(i < 2 ? ', ' : '예요. '); });
+  add('최소 경력은 보통 '); add(T.median_years + '년', 1); add(' 이상이고, 신입 지원이 가능한 공고는 '); add(pct(T.newbie, n), 1); add('예요.');
+  const k = $('kpis'); k.replaceChildren();
+  [['분석한 공고', fmt(n), '건'], ['채용 기업', fmt(T.companies), '서로 다른 회사 수'], ['최소 경력 중앙값', T.median_years + '년', '공고의 "N년 이상" 기준'],
+   ['신입 지원 가능', pct(T.newbie, n), `${fmt(T.newbie)}건`], [D.meta.kpi5[0], pct(T.kpi5, n), D.meta.kpi5[1]], ['서울·경기 근무', pct(T.capital, n), '근무지 기준']].forEach(([l, v, s]) => {
+    const d = el('div', 'stat'); d.append(el('span', null, l), el('b', null, v), el('small', null, s)); k.appendChild(d);
+  });
+
+  // insights
+  const ins = $('ins'); ins.replaceChildren();
+  [['핵심', T.ins.hero[0], T.ins.hero[1]], ...T.ins.items.map(x => [x[0], x[2], x[3]])].forEach(([tag, h, p]) => {
+    const a = el('article'); a.append(el('span', 'tag ' + (TONE[tag] || 'blue'), tag), el('h3', null, h), el('p', null, p)); ins.appendChild(a);
+  });
+
+  // top 20
+  const top = $('top'); top.replaceChildren();
+  const t20 = T.skills.slice().sort((a, b) => (b.must + b.nice) - (a.must + a.nice) || b.must - a.must).slice(0, 20);
+  const mx = Math.max(...t20.map(s => s.must + s.nice), 1);
+  t20.forEach(s => top.appendChild(barRow(s.skill, [[s.must, 'm'], [s.nice, 'k']], mx, pct(s.must + s.nice, n), `${s.must + s.nice}건`, `${s.skill} · ${s.group}\n필수 ${s.must}건, 우대만 ${s.nice}건`)));
+  why('why-skills', '이 차트가 말하는 것', T.sec.skills);
+
+  // career
+  const car = $('career'); car.replaceChildren();
+  const cmax = Math.max(...T.stages.flatMap(s => s.top.map(t => t[1] / s.n)), 0.01);
+  T.stages.forEach(s => {
+    const c = el('div', 'card'); const h = el('h3', null, '최소 경력 ' + s.stage); h.appendChild(el('small', null, `공고 ${fmt(s.n)}건`));
+    const b = el('div', 'bars sm');
+    s.top.forEach(([kk, v]) => b.appendChild(barRow(kk, [[v / s.n, 'm']], cmax, pct(v, s.n), null, `${kk}: ${v}건 / ${s.n}건`)));
+    c.append(h, b); car.appendChild(c);
+  });
+  why('why-career', '경력 단계별 차이', T.sec.career);
+
+  // prep
+  const prep = $('prep'); prep.replaceChildren();
+  const base = byMust.filter(s => s.must / n >= 0.15).slice(0, 6);
+  const core = byMust.filter(s => s.must / n >= 0.07 && s.must / n < 0.15).slice(0, 8);
+  const minTot = Math.max(5, Math.round(n * 0.04));
+  const plus = T.skills.filter(s => s.nice > s.must && s.must + s.nice >= minTot).sort((a, b) => b.nice - a.nice).slice(0, 8);
+  [['기본기', nn('없으면 서류에서 걸러지기 쉬운 기술'), base, s => `필수 ${pct(s.must, n)}`],
+   [nn('핵심 기술'), nn('방향에 맞춰 2–3개를 골라 프로젝트로 증명'), core, s => `필수 ${pct(s.must, n)}`],
+   ['가산점', nn('우대사항에 더 자주 나오는 기술'), plus, s => `우대 ${s.nice} · 필수 ${s.must}`]].forEach(([h, p, items, f], i) => {
+    const c = el('div', 'card tier'); const hh = el('div', 'tier-h'); hh.append(el('span', 'num', String(i + 1)), el('h3', null, h));
+    const ol = el('ol');
+    if (!items.length) ol.appendChild(el('li', null, nn('해당 기술 없음')));
+    items.forEach(s => { const li = el('li', null, s.skill); li.appendChild(el('span', null, f(s))); ol.appendChild(li); });
+    c.append(hh, el('p', 'note', p), ol); prep.appendChild(c);
+  });
+  why('why-prep', '이렇게 준비하세요', T.sec.prep);
+
+  // groups
+  const gg = $('groups'); gg.replaceChildren();
+  const gmax = Math.max(...T.skills.map(s => s.must + s.nice), 1);
+  D.groups.forEach(g => {
+    const items = T.skills.filter(s => s.group === g).sort((a, b) => (b.must + b.nice) - (a.must + a.nice)).slice(0, 6);
+    const c = el('div', 'card'); c.appendChild(el('h3', null, g));
+    const b = el('div', 'bars sm');
+    if (!items.length) b.appendChild(el('p', 'note', '이 직군에서는 언급이 없어요.'));
+    items.forEach(s => b.appendChild(barRow(s.skill, [[s.must, 'm'], [s.nice, 'k']], gmax, pct(s.must + s.nice, n), null, `${s.skill}: 필수 ${s.must}건, 우대만 ${s.nice}건`)));
+    c.appendChild(b); gg.appendChild(c);
+  });
+
+  // profile
+  const yb = $('years'); yb.replaceChildren();
+  const ymax = Math.max(...T.years.map(y => y[1]), 1);
+  const ytop = T.years.reduce((a, b) => b[1] > a[1] ? b : a);
+  T.years.forEach(([b, v]) => {
+    const c = el('div', 'col' + (b === ytop[0] ? ' hi' : '')); c.title = `${b}: ${v}건 (${pct(v, n)})`;
+    const bar = el('div', 'c'); bar.style.height = Math.max(3, v / ymax * 130) + 'px'; bar.appendChild(el('em', null, v));
+    c.append(bar, el('span', null, b)); yb.appendChild(c);
+  });
+  [['edu', T.edu], ['soft', T.soft], ['loc', T.locations]].forEach(([id, rows]) => {
+    const box = $(id); box.replaceChildren();
+    const m = Math.max(...rows.map(r => r[1]), 1);
+    if (!rows.length) box.appendChild(el('p', 'note', '언급이 없어요.'));
+    rows.forEach(([kk, v]) => box.appendChild(barRow(kk, [[v, 'm']], m, pct(v, n), null, `${kk}: ${v}건`)));
+  });
+  why('why-profile', '경력·학력·근무지 해석', T.sec.profile);
+
+  $('foot').textContent = D.meta.foot;
+  renderTable(); renderDetail();
+}
+
+// jobs table
+let sortKey = null, sortDir = 1, selected = null;
+document.querySelector('thead').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-s]'); if (!b) return;
+  if (b.dataset.s === sortKey) sortDir = -sortDir; else { sortKey = b.dataset.s; sortDir = 1; }
+  renderTable();
+});
+$('q').addEventListener('input', renderTable);
+const tbody = $('tbody');
+tbody.addEventListener('click', (e) => { const tr = e.target.closest('tr[data-id]'); if (tr) pick(tr.dataset.id); });
+tbody.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const tr = e.target.closest('tr[data-id]'); if (tr) pick(tr.dataset.id); } });
+function pick(id) { selected = id; renderTable(); renderDetail(); $('detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+
+function renderTable() {
+  const q = $('q').value.trim().toLowerCase();
+  let rows = D.jobs.filter(j => cur === '전체' || j.t === cur);
+  if (q) rows = rows.filter(j => (j.c + ' ' + j.p + ' ' + j.ms + ' ' + j.k.join(' ')).toLowerCase().includes(q));
+  if (sortKey) rows = rows.slice().sort((a, b) => { const av = a[sortKey], bv = b[sortKey]; return (typeof av === 'number' ? av - bv : String(av).localeCompare(String(bv), 'ko')) * sortDir; });
+  document.querySelectorAll('thead th').forEach(th => { const b = th.querySelector('button'); th.setAttribute('aria-sort', b.dataset.s === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'); });
+  $('count').textContent = `${fmt(rows.length)}건 표시`;
+  const frag = document.createDocumentFragment();
+  rows.forEach(j => {
+    const tr = el('tr'); tr.dataset.id = String(j.id); tr.tabIndex = 0;
+    if (String(j.id) === selected) tr.setAttribute('aria-selected', 'true');
+    const tt = el('td', 'hide-sm'); tt.appendChild(el('span', 'chip', j.t));
+    tr.append(el('td', 'co', j.c), el('td', 'pos', j.p), tt, el('td', 'yr', j.yl), el('td', 'hide-sm', j.l), el('td', 'kw hide-sm', j.ms || '—'));
+    frag.appendChild(tr);
+  });
+  tbody.replaceChildren(frag);
+}
+function renderDetail() {
+  const j = D.jobs.find(x => String(x.id) === selected && (cur === '전체' || x.t === cur));
+  $('detail').hidden = !j; if (!j) return;
+  $('d-title').textContent = j.p;
+  $('d-co').textContent = `${j.c} · ${j.t} · ${j.yl} · ${j.l}`;
+  $('d-req').textContent = j.r || '—';
+  $('d-pref').textContent = j.q || '—';
+  $('d-kw').textContent = `필수: ${j.ms || '없음'}  /  우대: ${j.k.join(', ') || '없음'}`;
+  $('d-link').href = `https://www.wanted.co.kr/wd/${j.id}`;
+}
+
+{ const h = location.hash.slice(1); let start = FIELDS.some(f => f.key === h) ? h : null;
+  if (!start) { try { const v = localStorage.getItem('jobmap-field'); if (FIELDS.some(f => f.key === v)) start = v; } catch (e) {} }
+  go(start || 'engineer'); }
+</script>
+<script>
+(() => {
+  const FIELD_NAME = {engineer:'엔지니어(임베디드·하드웨어)', dev:'개발', marketing:'마케팅', design:'디자인'};
+  const btn = $('ai-toggle'), panel = $('chat'), msgs = $('msgs'), ask = $('ask'), send = $('send'), sugs = $('sugs');
+  let sample = null, turns = [], busy = null, toolsOk = false;
+
+  const isWide = () => window.matchMedia('(min-width:1180px)').matches;
+  function setOpen(open) {
+    panel.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('chat-open', open);
+    try { localStorage.setItem('jobmap-chat', open ? '1' : '0'); } catch (e) {}
+    if (open) { updateCtx(); if (isWide()) ask.focus({preventScroll: true}); }
+  }
+  btn.addEventListener('click', () => setOpen(panel.hidden));
+  $('chat-close').addEventListener('click', () => setOpen(false));
+  $('chat-new').addEventListener('click', () => { if (busy) busy.abort(); turns = []; msgs.replaceChildren(); hello(); });
+
+  const p0 = (a, b) => b ? Math.round(a / b * 100) + '%' : '0%';
+  function trackLine(t, T) {
+    const top = T.skills.slice().sort((a, b) => b.must - a.must).slice(0, 6).map(s => `${s.skill} ${p0(s.must, T.n)}`).join(', ');
+    return `- ${t === '전체' ? '전체' : LABEL[t]}: 공고 ${T.n}건, 신입 가능 ${p0(T.newbie, T.n)}, 2년 이하 ${p0(T.junior, T.n)}, 필수 상위 ${top}`;
+  }
+  function context() {
+    const T = D.tracks[cur], n = T.n, L = [];
+    L.push(`분야: ${FIELD_NAME[field]} / 지금 보는 직군: ${LABEL[cur]} / 원티드 공고 ${n}건, 회사 ${T.companies}곳 (수집 ${D.collected})`);
+    L.push(`신입 가능 ${p0(T.newbie, n)}, 2년 이하 지원 가능 ${p0(T.junior, n)}, 최소 경력 중앙값 ${T.median_years}년, 서울·경기 ${p0(T.capital, n)}, ${D.meta.kpi5[0]} ${p0(T.kpi5, n)}`);
+    L.push(`\n[${NOUN} 언급 상위 25개: 이름 | 분류 | 필수 비율 | 우대사항에만 비율]`);
+    T.skills.slice().sort((a, b) => (b.must + b.nice) - (a.must + a.nice)).slice(0, 25).forEach(s => L.push(`${s.skill} | ${s.group} | ${p0(s.must, n)} | ${p0(s.nice, n)}`));
+    L.push(`\n[경력 구간별 필수 상위]`);
+    T.stages.forEach(s => L.push(`${s.stage}(공고 ${s.n}건): ` + s.top.map(([k, v]) => `${k} ${p0(v, s.n)}`).join(', ')));
+    L.push(`\n[최소 경력 분포] ` + T.years.map(([b, v]) => `${b} ${v}건`).join(', '));
+    L.push(`[학력·전공 언급] ` + T.edu.map(([k, v]) => `${k} ${p0(v, n)}`).join(', '));
+    L.push(`[공통 역량 언급] ` + T.soft.map(([k, v]) => `${k} ${p0(v, n)}`).join(', '));
+    L.push(`[근무지] ` + T.locations.map(([k, v]) => `${k} ${p0(v, n)}`).join(', '));
+    L.push(`\n[같은 분야의 세부 직군 비교]`);
+    ORDER.forEach(t => L.push(trackLine(t, D.tracks[t])));
+    L.push(`\n[사이트가 정리한 해석]`);
+    L.push(`${T.ins.hero[0]}: ${T.ins.hero[1]}`);
+    T.ins.items.forEach(x => L.push(`${x[2]}: ${x[3]}`));
+    Object.values(T.sec).forEach(x => L.push(x));
+    return L.join('\n');
+  }
+  const RULES = () => `너는 '직무 채용 지도' 사이트 오른쪽에 붙은 취업 상담 도우미야. 사용자는 이 분야로 취업하려는 사람이야.
+아래 통계는 원티드 채용 공고의 자격요건·우대사항을 분석한 결과야. 이 데이터를 근거로 답해.
+- 한국어로, 친근하고 정중한 '~요' 말투로 답해. 6~12줄 정도로 짧고 구체적으로.
+- 숫자는 아래 데이터에 있는 값만 인용하고, 데이터에 없는 내용(학습 자료, 일반 조언)은 일반적인 조언이라고 밝혀.
+- 목록이 필요하면 '- ' 나 '1. ' 로 시작하는 줄을 써. 표와 제목 기호(#)는 쓰지 마.
+- ${toolsOk ? '구체적인 공고를 추천하거나 찾을 때는 searchJobs 도구로 찾아서 회사·포지션·경력과 링크를 알려 줘.' : '개별 공고 목록은 페이지 아래 공고별 요건 표에서 검색하라고 안내해.'}
+- 다른 분야(${Object.values(FIELD_NAME).filter(v => v !== FIELD_NAME[field]).join(', ')})는 사이트 상단 버튼으로 바꿔 볼 수 있다고 안내해.
+
+${context()}`;
+
+  const makeSearchTool = () => ({
+    name: 'searchJobs',
+    description: '지금 분야의 원티드 공고를 검색해요. 키워드(회사·포지션·기술), 세부 직군, 최대 최소경력(년)으로 거르고 최대 8건을 돌려줘요. 각 항목: company, position, track, experience, location, must(필수 키워드), url.',
+    inputSchema: {type: 'object', properties: {
+      query: {type: 'string', description: '회사·포지션·기술 키워드. 비우면 전체'},
+      track: {type: 'string', description: '세부 직군 이름. 생략하면 사용자가 지금 보는 직군. 가능한 값: ' + ORDER.join(', ')},
+      maxYears: {type: 'number', description: '최소 경력 상한(년). 신입만이면 0'}}},
+    execute(input) {
+      const q = String(input.query || '').trim().toLowerCase();
+      let t = String(input.track || cur); if (!ORDER.includes(t)) { const hit = ORDER.find(k => LABEL[k] === t || k === t); t = hit || cur; }
+      const my = input.maxYears === undefined || input.maxYears === null || input.maxYears === '' ? null : Number(input.maxYears);
+      let rows = D.jobs.filter(j => t === '전체' || j.t === t);
+      if (my !== null && !Number.isNaN(my)) rows = rows.filter(j => j.y <= my);
+      if (q) { const words = q.split(/\s+/); rows = rows.filter(j => { const s = (j.c + ' ' + j.p + ' ' + j.ms + ' ' + j.k.join(' ')).toLowerCase(); return words.every(w => s.includes(w)); }); }
+      note(`공고 검색: ${q || '전체'}${my !== null ? ` · ${my}년 이하` : ''} → ${rows.length}건`);
+      return {total: rows.length, jobs: rows.slice(0, 8).map(j => ({company: j.c, position: j.p, track: LABEL[j.t] || j.t, experience: j.yl, location: j.l, must: j.m.slice(0, 6), url: `https://www.wanted.co.kr/wd/${j.id}`}))};
+    }
+  });
+
+  function inline(parent, text) {
+    const re = /(\*\*[^*]+\*\*|https?:\/\/[^\s)）\]]+)/g; let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) parent.appendChild(document.createTextNode(text.slice(last, m.index)));
+      if (m[0].startsWith('**')) parent.appendChild(el('strong', null, m[0].slice(2, -2)));
+      else { const a = el('a', null, m[0].replace(/[.,]$/, '')); a.href = a.textContent; a.target = '_blank'; a.rel = 'noopener'; parent.appendChild(a); }
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) parent.appendChild(document.createTextNode(text.slice(last)));
+  }
+  function renderMd(box, text) {
+    box.replaceChildren(); let list = null;
+    text.split('\n').forEach(raw => {
+      const line = raw.trimEnd();
+      const ul = line.match(/^\s*[-*•]\s+(.*)$/), ol = line.match(/^\s*\d+[.)]\s+(.*)$/), hd = line.match(/^#{1,4}\s+(.*)$/);
+      if (ul || ol) {
+        const kind = ul ? 'ul' : 'ol';
+        if (!list || list.tagName.toLowerCase() !== kind) { list = el(kind); box.appendChild(list); }
+        const li = el('li'); inline(li, (ul || ol)[1]); list.appendChild(li); return;
+      }
+      list = null;
+      if (!line.trim()) return;
+      const p = el('p', hd ? 'h' : null); inline(p, hd ? hd[1] : line); box.appendChild(p);
+    });
+  }
+  const scrollDown = () => { msgs.scrollTop = msgs.scrollHeight; };
+  function note(t) { msgs.appendChild(el('div', 'tool-note', t)); scrollDown(); }
+  const SUGS = () => [`${LABEL[cur]} 신입이면 뭐부터 공부해야 해?`, '가산점이 되는 건 뭐야?', '신입 지원 가능한 공고 5개 추천해 줘', '다른 세부 직군이랑 비교해 줘'];
+  function hello() {
+    const h = el('div', 'hello'); h.append(el('b', null, '무엇이든 물어보세요'), document.createTextNode('지금 보고 있는 분야와 직군의 공고 통계를 바탕으로 무엇을 공부하고 어디에 지원할지 함께 정리해 드려요.'));
+    msgs.appendChild(h); buildSugs();
+  }
+  function buildSugs() {
+    sugs.replaceChildren();
+    if (turns.length) return;
+    SUGS().forEach(s => { const b = el('button', 'sug', s); b.type = 'button'; b.addEventListener('click', () => { ask.value = s; submit(); }); sugs.appendChild(b); });
+  }
+  window.updateCtx = function updateCtx() {
+    if (!D) return;
+    $('chat-ctx').textContent = `지금 기준: ${FIELD_NAME[field]} · ${LABEL[cur]} (공고 ${D.tracks[cur].n.toLocaleString('ko-KR')}건)`;
+    buildSugs();
+  };
+  const COPY = {not_granted: 'AI 사용이 허용되지 않았어요. 이 페이지에서는 상담을 쓸 수 없어요.', sampling_disabled: '이 계정에서는 AI 상담을 쓸 수 없어요.', rate_limited: '요청이 많아요. 잠시 뒤에 다시 보내 주세요.', session_expired: '로그인이 만료됐어요. 다시 로그인한 뒤 보내 주세요.', prompt_too_large: '대화가 너무 길어졌어요. 새 대화를 시작해 주세요.', refused: '이 질문에는 답할 수 없어요. 질문을 바꿔 주세요.', empty_completion: '답이 비어 있어요. 질문을 조금 바꿔 다시 보내 주세요.'};
+  const HIDE = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
+
+  async function submit() {
+    const q = ask.value.trim(); if (!q || busy || !sample) return;
+    ask.value = ''; ask.style.height = ''; sugs.replaceChildren();
+    msgs.appendChild(el('div', 'msg u', q));
+    turns.push({role: 'user', content: q});
+    if (turns.length > 12) turns = turns.slice(-12);
+    while (turns.length && turns[0].role !== 'user') turns.shift();
+    const box = el('div', 'msg a think', '생각하는 중이에요…'); msgs.appendChild(box); scrollDown();
+    busy = new AbortController(); send.textContent = '멈추기'; send.classList.add('stop');
+    const opts = {cache: false, signal: busy.signal, onText: ({text}) => { box.classList.remove('think'); renderMd(box, text); scrollDown(); }};
+    if (toolsOk) opts.tools = [makeSearchTool()];
+    try {
+      const r = await sample([{role: 'user', content: RULES()}, ...turns], opts);
+      box.classList.remove('think'); renderMd(box, r.text); msgs.appendChild(box);
+      turns.push({role: 'assistant', content: r.text});
+      if (r.truncated) note('답이 길어서 중간에 끊겼어요. 나눠서 물어봐 주세요.');
+    } catch (e) {
+      box.classList.remove('think');
+      if (e && e.text) { renderMd(box, e.text); } else { box.remove(); }
+      if (e && e.code !== 'cancelled') { const err = el('div', 'msg a err', COPY[e.code] || '연결이 잠시 끊겼어요. 다시 보내 주세요.'); msgs.appendChild(err); }
+      if (e && HIDE.includes(e.code)) { ask.disabled = true; send.disabled = true; }
+      turns.pop();
+    } finally {
+      busy = null; send.textContent = '보내기'; send.classList.remove('stop'); scrollDown();
+    }
+  }
+  $('compose').addEventListener('submit', (e) => { e.preventDefault(); if (busy) { busy.abort(); return; } submit(); });
+  ask.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!busy) submit(); } });
+  ask.addEventListener('input', () => { ask.style.height = ''; ask.style.height = Math.min(ask.scrollHeight, 140) + 'px'; });
+
+  const _render = render;
+  render = function () { _render(); if (!panel.hidden) updateCtx(); };
+
+  hello();
+  (async () => {
+    if (!window.claude || !claude.use) return;
+    sample = await claude.use('sample');
+    if (!sample) return;
+    try { const lim = await sample.limits(); toolsOk = !!(lim && lim.tools); } catch (e) { toolsOk = false; }
+    btn.hidden = false;
+    let pref = null; try { pref = localStorage.getItem('jobmap-chat'); } catch (e) {}
+    setOpen(pref === '1' || (pref === null && isWide()));
+  })();
+})();
+</script>
